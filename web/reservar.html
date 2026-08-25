@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <title>Perola do Porto | Reservar</title>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="index.html">Perola do Porto</a>
+            <nav class="main-nav" aria-label="Menu principal">
+                <a href="index.html">Inicio</a>
+                <a href="login.html">Login</a>
+                <a class="active" href="reservar.html">Reservar</a>
+            </nav>
+        </header>
+        <main class="container reserva-layout">
+            <section class="page-panel reserva-panel">
+                <h1>Reservar</h1>
+                <p>Escolha os detalhes da sua estadia e veja uma estimativa de diária para casais e crianças.</p>
+
+                <div class="reserva-resumo" id="reserva-resumo">
+                    <div>
+                        <span class="reserva-label">Preço estimado</span>
+                        <strong id="valor-estimado">R$ 0,00</strong>
+                    </div>
+                    <div>
+                        <span class="reserva-label">Acomodação</span>
+                        <strong id="resumo-acomodacao">1 casal · 0 crianças</strong>
+                    </div>
+                </div>
+
+                <form id="reserva-form" method="post">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="nome">Nome completo</label>
+                            <input id="nome" name="nome" type="text" autocomplete="name" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="email">E-mail</label>
+                            <input id="email" name="email" type="email" autocomplete="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="checkin">Check-in</label>
+                            <input id="checkin" name="checkin" type="date" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="checkout">Check-out</label>
+                            <input id="checkout" name="checkout" type="date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="casais">Quantidade de casais</label>
+                            <select id="casais" name="casais" required>
+                                <option value="1">1 casal</option>
+                                <option value="2">2 casais</option>
+                                <option value="3">3 casais</option>
+                                <option value="4">4 casais</option>
+                                <option value="5">5 casais</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="criancas">Quantidade de crianças</label>
+                            <select id="criancas" name="criancas" required>
+                                <option value="0">0 crianças</option>
+                                <option value="1">1 criança</option>
+                                <option value="2">2 crianças</option>
+                                <option value="3">3 crianças</option>
+                                <option value="4">4 crianças</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="reserva-actions">
+                        <button class="button" type="submit">Solicitar reserva</button>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="galeria-panel" aria-label="Galeria da pousada">
+                <div class="galeria-main">
+                    <button class="galeria-nav prev" type="button" aria-label="Imagem anterior">&#8249;</button>
+                    <img id="galeria-principal" src="imagem/p1.jpeg" alt="Pousada Perola do Porto vista externa">
+                    <button class="galeria-nav next" type="button" aria-label="Próxima imagem">&#8250;</button>
+                </div>
+
+                <div class="galeria-rodape">
+                    <span class="galeria-badge">12</span>
+                </div>
+
+                <div class="galeria-thumbs" id="galeria-thumbs">
+                    <button class="thumb active" type="button" data-index="0" style="background-image: url('imagem/p1.jpeg');" aria-label="Ver imagem 1"></button>
+                    <button class="thumb" type="button" data-index="1" style="background-image: url('imagem/p2.jpeg');" aria-label="Ver imagem 2"></button>
+                    <button class="thumb" type="button" data-index="2" style="background-image: url('imagem/p3.jpeg');" aria-label="Ver imagem 3"></button>
+                    <button class="thumb" type="button" data-index="3" style="background-image: url('imagem/p4.jpeg');" aria-label="Ver imagem 4"></button>
+                    <button class="thumb" type="button" data-index="4" style="background-image: url('imagem/p5.jpg');" aria-label="Ver imagem 5"></button>
+                    <button class="thumb" type="button" data-index="5" style="background-image: url('imagem/p6.jpg');" aria-label="Ver imagem 6"></button>
+                    <button class="thumb" type="button" data-index="6" style="background-image: url('imagem/p7.jpg');" aria-label="Ver imagem 7"></button>
+                    <button class="thumb" type="button" data-index="7" style="background-image: url('imagem/p8.jpg');" aria-label="Ver imagem 8"></button>
+                    <button class="thumb" type="button" data-index="8" style="background-image: url('imagem/p9.jpg');" aria-label="Ver imagem 9"></button>
+                    <button class="thumb" type="button" data-index="9" style="background-image: url('imagem/p10.jpg');" aria-label="Ver imagem 10"></button>
+                    <button class="thumb" type="button" data-index="10" style="background-image: url('imagem/p11.jpg');" aria-label="Ver imagem 11"></button>
+                    <button class="thumb" type="button" data-index="11" style="background-image: url('imagem/p12.jpg');" aria-label="Ver imagem 12"></button>
+                </div>
+            </aside>
+        </main>
+        <script src="js/script.js"></script>
+    </body>
+</html>

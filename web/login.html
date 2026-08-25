@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <title>Perola do Porto | Login</title>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="index.html">Perola do Porto</a>
+            <nav class="main-nav" aria-label="Menu principal">
+                <a href="index.html">Inicio</a>
+                <a class="active" href="login.html">Login</a>
+                <a href="reservar.html">Reservar</a>
+            </nav>
+        </header>
+        <main class="container">
+            <section class="page-panel">
+                <h1>Login</h1>
+                <p>Entre na sua conta para acompanhar reservas e acessar seus dados.</p>
+                <form id="login-form" method="post">
+                    <div class="form-field">
+                        <label for="email">E-mail</label>
+                        <input id="email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="senha">Senha</label>
+                        <input id="senha" name="senha" type="password" autocomplete="current-password" required>
+                    </div>
+                    <button class="button" type="submit">Entrar</button>
+                </form>
+            </section>
+        </main>
+        <script src="js/script.js"></script>
+    </body>
+</html>
