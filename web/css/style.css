@@ -435,6 +435,48 @@ a {
     margin-top: 18px;
 }
 
+.resumo-pagina {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.resumo-detalhes {
+    display: grid;
+    gap: 0;
+    margin: 24px 0;
+    text-align: left;
+}
+
+.resumo-detalhes div {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid #d9e2ec;
+}
+
+.resumo-detalhes dt {
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.resumo-detalhes dd {
+    color: var(--ink);
+    font-weight: 700;
+    text-align: right;
+}
+
+@media (max-width: 560px) {
+    .resumo-detalhes div {
+        display: grid;
+        gap: 4px;
+    }
+
+    .resumo-detalhes dd {
+        text-align: left;
+    }
+}
+
 .chatbot-wrapper {
     position: fixed;
     right: 24px;

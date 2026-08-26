@@ -21,7 +21,7 @@
         <main class="container reserva-layout">
             <section class="page-panel reserva-panel">
                 <h1>Reservar</h1>
-                <p>Escolha os detalhes da sua estadia e veja uma estimativa de diária para casais e crianças.</p>
+                <p>Preencha seus dados e escolha os detalhes da sua estadia.</p>
 
                 <div class="reserva-resumo" id="reserva-resumo">
                     <div>
@@ -30,11 +30,23 @@
                     </div>
                     <div>
                         <span class="reserva-label">Acomodação</span>
-                        <strong id="resumo-acomodacao">1 casal · 0 crianças</strong>
+                        <strong id="resumo-acomodacao">Standard</strong>
                     </div>
                 </div>
 
                 <form id="reserva-form" method="post">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="tipo-quarto">Tipo de quarto</label>
+                            <select id="tipo-quarto" name="tipo-quarto" required>
+                                <option value="duplo-standard">Pérola de Maioca (Duplo Standard) - R$ 330,00</option>
+                                <option value="standard" selected>Pérola de Maioca (Standard) - R$ 360,00</option>
+                                <option value="superior">Pérola de Mabe (Superior) - R$ 420,00</option>
+                                <option value="senior-sem-varanda">Pérola de Akoya (Sênior sem varanda) - R$ 480,00</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-grid">
                         <div class="form-field">
                             <label for="nome">Nome completo</label>
@@ -43,6 +55,17 @@
                         <div class="form-field">
                             <label for="email">E-mail</label>
                             <input id="email" name="email" type="email" autocomplete="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="cpf">CPF</label>
+                            <input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="telefone">Telefone</label>
+                            <input id="telefone" name="telefone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required>
                         </div>
                     </div>
 
@@ -59,13 +82,18 @@
 
                     <div class="form-grid">
                         <div class="form-field">
-                            <label for="casais">Quantidade de casais</label>
-                            <select id="casais" name="casais" required>
-                                <option value="1">1 casal</option>
-                                <option value="2">2 casais</option>
-                                <option value="3">3 casais</option>
-                                <option value="4">4 casais</option>
-                                <option value="5">5 casais</option>
+                            <label for="adultos">Quantidade de adultos</label>
+                            <select id="adultos" name="adultos" required>
+                                <option value="1">1 adulto</option>
+                                <option value="2" selected>2 adultos</option>
+                                <option value="3">3 adultos</option>
+                                <option value="4">4 adultos</option>
+                                <option value="5">5 adultos</option>
+                                <option value="6">6 adultos</option>
+                                <option value="7">7 adultos</option>
+                                <option value="8">8 adultos</option>
+                                <option value="9">9 adultos</option>
+                                <option value="10">10 adultos</option>
                             </select>
                         </div>
                         <div class="form-field">
@@ -80,8 +108,18 @@
                         </div>
                     </div>
 
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="cafe-da-manha">Café da manhã</label>
+                            <select id="cafe-da-manha" name="cafe-da-manha" required>
+                                <option value="sim">Com café da manhã</option>
+                                <option value="nao">Sem café da manhã</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="reserva-actions">
-                        <button class="button" type="submit">Solicitar reserva</button>
+                        <button class="button" type="submit">Ver resumo</button>
                     </div>
                 </form>
             </section>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <title>Perola do Porto | Resumo</title>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="index.html">Perola do Porto</a>
+            <nav class="main-nav" aria-label="Menu principal">
+                <a href="index.html">Inicio</a>
+                <a href="login.html">Login</a>
+                <a class="active" href="reservar.html">Reservar</a>
+            </nav>
+        </header>
+        <main class="container">
+            <section class="page-panel reserva-panel resumo-pagina">
+                <h1>Resumo da reserva</h1>
+                <p>Confira os dados da sua estadia antes de continuar para o pagamento.</p>
+                <dl class="resumo-detalhes">
+                    <div><dt>Hóspede</dt><dd id="resumo-nome"></dd></div>
+                    <div><dt>CPF</dt><dd id="resumo-cpf"></dd></div>
+                    <div><dt>Telefone</dt><dd id="resumo-telefone"></dd></div>
+                    <div><dt>Quarto</dt><dd id="resumo-quarto"></dd></div>
+                    <div><dt>Estadia</dt><dd id="resumo-estadia"></dd></div>
+                    <div><dt>Hóspedes</dt><dd id="resumo-hospedes"></dd></div>
+                    <div><dt>Café da manhã</dt><dd id="resumo-cafe"></dd></div>
+                    <div><dt>Total estimado</dt><dd id="resumo-total"></dd></div>
+                </dl>
+                <p id="resumo-vazio" class="form-message" hidden>Não encontramos uma reserva. Volte ao formulário para preenchê-lo.</p>
+                <div class="reserva-actions">
+                    <a class="button button-secondary" href="reservar.html">Voltar</a>
+                    <a class="button" id="ir-pagamento" href="pagamento.html">Ir para pagamento</a>
+                </div>
+            </section>
+        </main>
+        <script>
+            (function () {
+                "use strict";
+                var dados;
+                try { dados = JSON.parse(localStorage.getItem("reservaPousada")); } catch (erro) { dados = null; }
+                var vazio = document.getElementById("resumo-vazio");
+                var pagamento = document.getElementById("ir-pagamento");
+                if (!dados) {
+                    vazio.hidden = false;
+                    pagamento.hidden = true;
+                    return;
+                }
+                function preencher(id, texto) { document.getElementById(id).textContent = texto || "Não informado"; }
+                function data(dataTexto) {
+                    if (!dataTexto) { return "Não informada"; }
+                    return new Date(dataTexto + "T00:00:00").toLocaleDateString("pt-BR");
+                }
+                preencher("resumo-nome", dados.nome);
+                preencher("resumo-cpf", dados.cpf);
+                preencher("resumo-telefone", dados.telefone);
+                preencher("resumo-quarto", dados.tipoQuartoNome + " - " + new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(dados.diaria)) + " por noite");
+                preencher("resumo-estadia", data(dados.checkin) + " até " + data(dados.checkout) + " (" + dados.noites + " noite" + (Number(dados.noites) === 1 ? "" : "s") + ")");
+                preencher("resumo-hospedes", dados.adultos + " adulto" + (Number(dados.adultos) === 1 ? "" : "s") + " e " + dados.criancas + " criança" + (Number(dados.criancas) === 1 ? "" : "s"));
+                preencher("resumo-cafe", dados["cafe-da-manha"] === "sim" ? "Sim" : "Não");
+                preencher("resumo-total", new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(dados.total)));
+            }());
+        </script>
+    </body>
+</html>

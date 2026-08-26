@@ -3,8 +3,13 @@
 
     var ENDPOINT = "api/chat";
     var state = { aberto: false, enviando: false, historico: [] };
-    var PRECO_POR_CASAL = 550;
     var PRECO_POR_CRIANCA = 90;
+    var TARIFAS_QUARTOS = {
+        "duplo-standard": { nome: "Duplo Standard", diaria: 330 },
+        standard: { nome: "Standard", diaria: 360 },
+        superior: { nome: "Superior", diaria: 420 },
+        "senior-sem-varanda": { nome: "Sênior sem varanda", diaria: 480 }
+    };
     var imagensHotel = [
         "imagem/p1.jpeg",
         "imagem/p2.jpeg",
@@ -24,16 +29,17 @@
         return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
     }
 
-    function calcularDiaria(casais, criancas) {
-        var qtdCasais = Number(casais) || 1;
+    function calcularDiaria(adultos, criancas, tipoQuarto) {
+        var qtdAdultos = Number(adultos) || 2;
         var qtdCriancas = Number(criancas) || 0;
-        var valorBase = (qtdCasais * PRECO_POR_CASAL) + (qtdCriancas * PRECO_POR_CRIANCA);
+        var tarifa = TARIFAS_QUARTOS[tipoQuarto] || TARIFAS_QUARTOS.standard;
+        var valorBase = tarifa.diaria + (qtdCriancas * PRECO_POR_CRIANCA);
         return {
-            casais: qtdCasais,
+            adultos: qtdAdultos,
             criancas: qtdCriancas,
-            valor: valorBase,
-            adultos: qtdCasais * 2,
-            quartos: Math.max(1, qtdCasais)
+            tipoQuarto: tarifa.nome,
+            diaria: tarifa.diaria,
+            valor: valorBase
         };
     }
 
@@ -54,15 +60,15 @@
         return noites > 0 ? noites : 1;
     }
 
-    function montarUrlOmnibees(casais, criancas) {
-        var dados = calcularDiaria(casais, criancas);
+    function montarUrlOmnibees(adultos, criancas, tipoQuarto) {
+        var dados = calcularDiaria(adultos, criancas, tipoQuarto);
         var url = new URL("https://book.omnibees.com/hotelresults");
         url.searchParams.set("q", "15704");
         url.searchParams.set("lang", "pt-PT");
         url.searchParams.set("version", "4");
         url.searchParams.set("CheckIn", "");
         url.searchParams.set("CheckOut", "");
-        url.searchParams.set("NRooms", String(dados.quartos));
+        url.searchParams.set("NRooms", "1");
         url.searchParams.set("ad", String(dados.adultos));
         url.searchParams.set("ch", String(dados.criancas));
         url.searchParams.set("Code", "");
@@ -70,38 +76,44 @@
     }
 
     function atualizarResumoReserva() {
-        var campoCasais = document.getElementById("casais");
+        var campoAdultos = document.getElementById("adultos");
         var campoCriancas = document.getElementById("criancas");
+        var campoTipoQuarto = document.getElementById("tipo-quarto");
         var campoCheckIn = document.getElementById("checkin");
         var campoCheckOut = document.getElementById("checkout");
         var valorTotal = document.getElementById("valor-estimado");
         var resumoAcomodacao = document.getElementById("resumo-acomodacao");
-        if (!campoCasais || !campoCriancas || !campoCheckIn || !campoCheckOut || !valorTotal || !resumoAcomodacao) {
+        if (!campoAdultos || !campoCriancas || !campoTipoQuarto || !campoCheckIn || !campoCheckOut || !valorTotal || !resumoAcomodacao) {
             return;
         }
 
-        var dados = calcularDiaria(campoCasais.value, campoCriancas.value);
+        var dados = calcularDiaria(campoAdultos.value, campoCriancas.value, campoTipoQuarto.value);
         var noites = calcularNoites(campoCheckIn.value, campoCheckOut.value);
         var totalReserva = dados.valor * noites;
 
         valorTotal.textContent = formatarMoeda(totalReserva);
-        resumoAcomodacao.textContent = dados.casais + " casal" + (dados.casais === 1 ? "" : "es") + " · " + dados.criancas + " criança" + (dados.criancas === 1 ? "" : "s") + " · " + noites + " noite" + (noites === 1 ? "" : "s");
+        resumoAcomodacao.textContent = dados.tipoQuarto;
     }
 
     function aplicarParametrosReserva() {
         var params = new URLSearchParams(window.location.search);
-        var casalParam = params.get("casais");
+        var adultoParam = params.get("adultos");
         var criancaParam = params.get("criancas");
+        var tipoQuartoParam = params.get("tipoQuarto");
         var valorParam = params.get("valor");
-        var campoCasais = document.getElementById("casais");
+        var campoAdultos = document.getElementById("adultos");
         var campoCriancas = document.getElementById("criancas");
         var valorTotal = document.getElementById("valor-estimado");
 
-        if (campoCasais && casalParam) {
-            campoCasais.value = casalParam;
+        if (campoAdultos && adultoParam) {
+            campoAdultos.value = adultoParam;
         }
         if (campoCriancas && criancaParam) {
             campoCriancas.value = criancaParam;
+        }
+        var campoTipoQuarto = document.getElementById("tipo-quarto");
+        if (campoTipoQuarto && tipoQuartoParam) {
+            campoTipoQuarto.value = tipoQuartoParam;
         }
         if (valorTotal && valorParam) {
             valorTotal.textContent = formatarMoeda(Number(valorParam));
@@ -219,7 +231,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        var messages = { "login-form": "Login realizado com sucesso.", "reserva-form": "Sua solicitacao de reserva foi enviada com sucesso." };
+        var messages = { "login-form": "Login realizado com sucesso." };
         Object.keys(messages).forEach(function (formId) {
             var form = document.getElementById(formId);
             if (!form) { return; }
@@ -238,7 +250,7 @@
 
         var reservaForm = document.getElementById("reserva-form");
         if (reservaForm) {
-            var camposReserva = [document.getElementById("casais"), document.getElementById("criancas"), document.getElementById("checkin"), document.getElementById("checkout")];
+            var camposReserva = [document.getElementById("adultos"), document.getElementById("criancas"), document.getElementById("tipo-quarto"), document.getElementById("checkin"), document.getElementById("checkout")];
             camposReserva.forEach(function (campo) {
                 if (!campo) { return; }
                 campo.addEventListener("change", atualizarResumoReserva);
@@ -247,15 +259,16 @@
             aplicarParametrosReserva();
             reservaForm.addEventListener("submit", function (event) {
                 event.preventDefault();
-                var oldMessage = reservaForm.querySelector(".form-message");
-                if (oldMessage) { oldMessage.remove(); }
-                var message = document.createElement("p");
-                message.className = "form-message";
-                message.setAttribute("role", "status");
-                message.textContent = "Sua solicitacao de reserva foi enviada com sucesso.";
-                reservaForm.appendChild(message);
-                reservaForm.reset();
-                atualizarResumoReserva();
+                var dados = {};
+                new FormData(reservaForm).forEach(function (valor, chave) { dados[chave] = valor; });
+                var tarifa = TARIFAS_QUARTOS[dados["tipo-quarto"]] || TARIFAS_QUARTOS.standard;
+                var noites = calcularNoites(dados.checkin, dados.checkout);
+                dados.tipoQuartoNome = tarifa.nome;
+                dados.diaria = tarifa.diaria;
+                dados.noites = noites;
+                dados.total = (tarifa.diaria + (Number(dados.criancas) * PRECO_POR_CRIANCA)) * noites;
+                localStorage.setItem("reservaPousada", JSON.stringify(dados));
+                window.location.href = "resumo.html";
             });
         }
 

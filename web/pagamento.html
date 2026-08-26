@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <title>Perola do Porto | Pagamento</title>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="index.html">Perola do Porto</a>
+            <nav class="main-nav" aria-label="Menu principal">
+                <a href="index.html">Inicio</a>
+                <a href="login.html">Login</a>
+                <a class="active" href="reservar.html">Reservar</a>
+            </nav>
+        </header>
+        <main class="container">
+            <section class="page-panel reserva-panel resumo-pagina">
+                <h1>Forma de pagamento</h1>
+                <p>Escolha como deseja pagar a sua reserva.</p>
+                <form id="pagamento-form">
+                    <div class="form-field">
+                        <label for="forma-pagamento">Forma de pagamento</label>
+                        <select id="forma-pagamento" required>
+                            <option value="boleto">Boleto</option>
+                            <option value="credito">Cartão de crédito</option>
+                            <option value="debito">Cartão de débito</option>
+                            <option value="pix">Pix</option>
+                        </select>
+                    </div>
+                    <div class="reserva-actions">
+                        <a class="button button-secondary" href="resumo.html">Voltar ao resumo</a>
+                        <button class="button" type="submit">Continuar pagamento</button>
+                    </div>
+                    <p id="pagamento-mensagem" class="form-message" role="status" hidden></p>
+                </form>
+            </section>
+        </main>
+        <script>
+            (function () {
+                "use strict";
+                var form = document.getElementById("pagamento-form");
+                var mensagem = document.getElementById("pagamento-mensagem");
+                if (!localStorage.getItem("reservaPousada")) {
+                    window.location.href = "reservar.html";
+                    return;
+                }
+                form.addEventListener("submit", function (evento) {
+                    evento.preventDefault();
+                    var nomes = { boleto: "Boleto", credito: "Cartão de crédito", debito: "Cartão de débito", pix: "Pix" };
+                    mensagem.textContent = "Pagamento selecionado: " + nomes[document.getElementById("forma-pagamento").value] + ". A integração de cobrança será concluída pelo sistema de pagamento.";
+                    mensagem.hidden = false;
+                });
+            }());
+        </script>
+    </body>
+</html>
