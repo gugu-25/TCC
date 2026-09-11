@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <title>Perola do Porto | Minhas reservas</title>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="index.html">Perola do Porto</a>
+            <nav class="main-nav" aria-label="Menu principal">
+                <a href="index.html">Inicio</a>
+                <a href="login.html">Login</a>
+                <a href="reservar.html">Reservar</a>
+                <a class="active" href="reservas.html">Minhas reservas</a>
+            </nav>
+        </header>
+        <main class="container">
+            <section class="page-panel reservas-pagina">
+                <p class="eyebrow eyebrow-dark">Sua estadia</p>
+                <h1>Minhas reservas</h1>
+                <p id="reservas-introducao">Acompanhe os dados das suas estadias confirmadas.</p>
+                <div id="reservas-acesso-negado" class="reservas-vazio" hidden>
+                    <span class="reservas-vazio-mark" aria-hidden="true">!</span>
+                    <h2>Faça login para verificar suas reservas</h2>
+                    <p>Para proteger seus dados, entre na sua conta antes de consultar suas estadias.</p>
+                    <a class="button" href="login.html?redirect=reservas.html">Fazer login</a>
+                </div>
+                <div id="reservas-vazio" class="reservas-vazio" hidden>
+                    <span class="reservas-vazio-mark" aria-hidden="true">+</span>
+                    <h2>Você ainda não tem reservas</h2>
+                    <p>Escolha uma acomodação e planeje seus dias em Porto de Galinhas.</p>
+                    <a class="button" href="reservar.html">Fazer uma reserva</a>
+                </div>
+                <div id="lista-reservas" class="lista-reservas"></div>
+            </section>
+        </main>
+        <script>
+            (function () {
+                "use strict";
+                var lista = document.getElementById("lista-reservas");
+                var vazio = document.getElementById("reservas-vazio");
+                var acessoNegado = document.getElementById("reservas-acesso-negado");
+                var introducao = document.getElementById("reservas-introducao");
+                var sessao;
+                var reservas;
+                try { sessao = JSON.parse(localStorage.getItem("sessaoPousada")); } catch (erroSessao) { sessao = null; }
+                if (!sessao || sessao.autenticado !== true) {
+                    acessoNegado.hidden = false;
+                    introducao.hidden = true;
+                    return;
+                }
+                try { reservas = JSON.parse(localStorage.getItem("reservasPousada")) || []; } catch (erro) { reservas = []; }
+
+                function moeda(valor) {
+                    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(valor) || 0);
+                }
+                function data(texto) {
+                    if (!texto) { return "Não informada"; }
+                    return new Date(texto + "T00:00:00").toLocaleDateString("pt-BR");
+                }
+                function texto(valor, padrao) { return valor || padrao; }
+                function detalhe(rotulo, valor) {
+                    var item = document.createElement("div");
+                    var titulo = document.createElement("dt");
+                    var conteudo = document.createElement("dd");
+                    titulo.textContent = rotulo;
+                    conteudo.textContent = valor;
+                    item.appendChild(titulo);
+                    item.appendChild(conteudo);
+                    return item;
+                }
+                function montarReserva(reserva, indice) {
+                    var artigo = document.createElement("article");
+                    artigo.className = "reserva-card";
+                    var topo = document.createElement("div");
+                    topo.className = "reserva-card-topo";
+                    var titulo = document.createElement("h2");
+                    titulo.textContent = texto(reserva.tipoQuartoNome, "Acomodação");
+                    var status = document.createElement("span");
+                    status.className = "reserva-status";
+                    status.textContent = "Confirmada";
+                    topo.appendChild(titulo);
+                    topo.appendChild(status);
+                    var codigo = document.createElement("p");
+                    codigo.className = "reserva-codigo";
+                    codigo.textContent = "Código " + texto(reserva.codigo, "PP-" + (indice + 1));
+                    var detalhes = document.createElement("dl");
+                    detalhes.className = "reserva-card-detalhes";
+                    detalhes.appendChild(detalhe("Hóspede", texto(reserva.nome, "Não informado")));
+                    detalhes.appendChild(detalhe("Entrada", data(reserva.checkin)));
+                    detalhes.appendChild(detalhe("Saída", data(reserva.checkout)));
+                    detalhes.appendChild(detalhe("Hóspedes", reserva.adultos + " adulto(s) e " + reserva.criancas + " criança(s)"));
+                    detalhes.appendChild(detalhe("Pagamento", texto(reserva.formaPagamento, "Não informado")));
+                    detalhes.appendChild(detalhe("Total", moeda(reserva.total)));
+                    artigo.appendChild(topo);
+                    artigo.appendChild(codigo);
+                    artigo.appendChild(detalhes);
+                    return artigo;
+                }
+
+                if (reservas.length === 0) {
+                    vazio.hidden = false;
+                    introducao.hidden = true;
+                    return;
+                }
+                reservas.slice().reverse().forEach(function (reserva, indice) {
+                    lista.appendChild(montarReserva(reserva, indice));
+                });
+            }());
+        </script>
+    </body>
+</html>

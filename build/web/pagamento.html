@@ -16,28 +16,87 @@
                 <a href="index.html">Inicio</a>
                 <a href="login.html">Login</a>
                 <a class="active" href="reservar.html">Reservar</a>
+                <a href="reservas.html">Minhas reservas</a>
             </nav>
         </header>
         <main class="container">
-            <section class="page-panel reserva-panel resumo-pagina">
-                <h1>Forma de pagamento</h1>
-                <p>Escolha como deseja pagar a sua reserva.</p>
+            <section class="page-panel reserva-panel resumo-pagina pagamento-pagina">
+                <p class="eyebrow eyebrow-dark">Ultima etapa</p>
+                <h1>Confirmar pagamento</h1>
+                <p>Escolha uma forma de pagamento para concluir o registro da sua estadia.</p>
                 <form id="pagamento-form">
                     <div class="form-field">
                         <label for="forma-pagamento">Forma de pagamento</label>
                         <select id="forma-pagamento" required>
-                            <option value="boleto">Boleto</option>
+                            <option value="pix">Pix</option>
                             <option value="credito">Cartão de crédito</option>
                             <option value="debito">Cartão de débito</option>
-                            <option value="pix">Pix</option>
+                            <option value="boleto">Boleto bancário</option>
                         </select>
+                    </div>
+                    <button id="confirmar-metodo" class="button" type="button">Continuar com este método</button>
+                    <div id="pagamento-pix" class="pagamento-opcao" hidden>
+                        <h2>Pix</h2>
+                        <p>Escaneie o QR Code ou copie o código Pix para concluir o pagamento.</p>
+                        <div id="pix-cobranca" class="pix-cobranca">
+                            <div class="pix-qr-area">
+                                <img id="pix-qr-code" class="pix-qr-code" width="220" height="220" alt="QR Code para pagamento Pix">
+                                <span id="pix-qr-status" class="pix-qr-status">QR Code pronto para leitura</span>
+                            </div>
+                            <div class="pix-codigo-area">
+                                <label for="pix-copia-e-cola">Código Pix copia e cola</label>
+                                <textarea id="pix-copia-e-cola" class="pix-copia-e-cola" readonly></textarea>
+                                <button id="pix-copiar" class="button button-secondary" type="button">Copiar código Pix</button>
+                                <p id="pix-copiar-mensagem" class="form-message" role="status" hidden></p>
+                            </div>
+                        </div>
+                        <div class="pagamento-destaque">Pagamento instantâneo e seguro</div>
+                    </div>
+                    <div id="pagamento-cartao" class="pagamento-opcao" hidden>
+                        <h2>Dados do cartão</h2>
+                        <div class="form-field">
+                            <label for="numero-cartao">Número do cartão</label>
+                            <input id="numero-cartao" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000">
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="validade-cartao">Validade</label>
+                                <input id="validade-cartao" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA">
+                            </div>
+                            <div class="form-field">
+                                <label for="codigo-cartao">Código de segurança</label>
+                                <input id="codigo-cartao" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="000">
+                            </div>
+                        </div>
+                        <div id="parcelamento-wrapper" class="form-field">
+                            <label for="parcelamento">Parcelamento</label>
+                            <select id="parcelamento">
+                                <option value="1">1x sem juros</option>
+                                <option value="2">2x com 2% de juros</option>
+                                <option value="3">3x com 4% de juros</option>
+                                <option value="6">6x com 8% de juros</option>
+                                <option value="10">10x com 12% de juros</option>
+                            </select>
+                            <span id="valor-parcelas" class="parcelas-valor"></span>
+                        </div>
+                    </div>
+                    <div id="pagamento-boleto" class="pagamento-opcao" hidden>
+                        <h2>Boleto bancário</h2>
+                        <p>O boleto será disponibilizado após a confirmação desta reserva.</p>
+                        <div class="pagamento-destaque">Prazo de compensação: até 2 dias úteis</div>
                     </div>
                     <div class="reserva-actions">
                         <a class="button button-secondary" href="resumo.html">Voltar ao resumo</a>
-                        <button class="button" type="submit">Continuar pagamento</button>
+                        <button id="verificar-pagamento" class="button" type="submit" hidden>Verificar pagamento</button>
                     </div>
                     <p id="pagamento-mensagem" class="form-message" role="status" hidden></p>
                 </form>
+                <section id="pagamento-sucesso" class="pagamento-sucesso" hidden aria-live="polite">
+                    <span class="sucesso-icone" aria-hidden="true">✓</span>
+                    <h2>Reserva confirmada</h2>
+                    <p>Seu pedido foi registrado com sucesso. Você pode consultar todos os detalhes na área de reservas.</p>
+                    <a class="button" href="reservas.html">Ver minhas reservas</a>
+                </section>
             </section>
         </main>
         <script>
@@ -45,15 +104,122 @@
                 "use strict";
                 var form = document.getElementById("pagamento-form");
                 var mensagem = document.getElementById("pagamento-mensagem");
-                if (!localStorage.getItem("reservaPousada")) {
+                var forma = document.getElementById("forma-pagamento");
+                var pix = document.getElementById("pagamento-pix");
+                var cartao = document.getElementById("pagamento-cartao");
+                var boleto = document.getElementById("pagamento-boleto");
+                var sucesso = document.getElementById("pagamento-sucesso");
+                var pixCodigo = document.getElementById("pix-copia-e-cola");
+                var pixQrCode = document.getElementById("pix-qr-code");
+                var pixCopiar = document.getElementById("pix-copiar");
+                var pixCopiarMensagem = document.getElementById("pix-copiar-mensagem");
+                var confirmarMetodo = document.getElementById("confirmar-metodo");
+                var verificarPagamento = document.getElementById("verificar-pagamento");
+                var parcelamento = document.getElementById("parcelamento");
+                var parcelamentoWrapper = document.getElementById("parcelamento-wrapper");
+                var valorParcelas = document.getElementById("valor-parcelas");
+                var metodoConfirmado = false;
+                var reserva;
+                try { reserva = JSON.parse(localStorage.getItem("reservaPousada")); } catch (erro) { reserva = null; }
+                if (!reserva || reserva.status === "confirmada") {
                     window.location.href = "reservar.html";
                     return;
                 }
+
+                function gerarCodigoPix() {
+                    var identificador = "PP" + Date.now().toString().slice(-10);
+                    var valor = Number(reserva.total || 0).toFixed(2);
+                    return "00020126580014BR.GOV.BCB.PIX0136pousada.perola.do.porto520400005303986540" + valor + "5802BR5918PEROLA DO PORTO6009PORTO GALINHAS62070503" + identificador + "6304A1B2";
+                }
+
+                function prepararPix() {
+                    if (!pixCodigo || !pixQrCode) { return; }
+                    if (!reserva.pixCodigo) {
+                        reserva.pixCodigo = gerarCodigoPix();
+                        localStorage.setItem("reservaPousada", JSON.stringify(reserva));
+                    }
+                    pixCodigo.value = reserva.pixCodigo;
+                    pixQrCode.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(reserva.pixCodigo);
+                }
+
+                pixCopiar.addEventListener("click", function () {
+                    navigator.clipboard.writeText(pixCodigo.value).then(function () {
+                        pixCopiarMensagem.textContent = "Código Pix copiado.";
+                        pixCopiarMensagem.hidden = false;
+                    }).catch(function () {
+                        pixCodigo.select();
+                        document.execCommand("copy");
+                        pixCopiarMensagem.textContent = "Código Pix selecionado para copiar.";
+                        pixCopiarMensagem.hidden = false;
+                    });
+                });
+                function atualizarOpcao() {
+                    if (!metodoConfirmado) {
+                        pix.hidden = true;
+                        cartao.hidden = true;
+                        boleto.hidden = true;
+                        return;
+                    }
+                    var valor = forma.value;
+                    pix.hidden = valor !== "pix";
+                    cartao.hidden = valor !== "credito" && valor !== "debito";
+                    boleto.hidden = valor !== "boleto";
+                    parcelamentoWrapper.hidden = valor !== "credito";
+                    if (valor === "pix") { prepararPix(); }
+                }
+                forma.addEventListener("change", atualizarOpcao);
+                atualizarOpcao();
+
+                function atualizarParcelas() {
+                    var quantidade = Number(parcelamento.value);
+                    var juros = { 1: 0, 2: 0.02, 3: 0.04, 6: 0.08, 10: 0.12 }[quantidade] || 0;
+                    var total = Number(reserva.total || 0) * (1 + juros);
+                    valorParcelas.textContent = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(total / quantidade) + " por parcela (total: " + new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(total) + ")";
+                }
+                parcelamento.addEventListener("change", atualizarParcelas);
+                atualizarParcelas();
+                confirmarMetodo.addEventListener("click", function () {
+                    metodoConfirmado = true;
+                    confirmarMetodo.hidden = true;
+                    forma.disabled = true;
+                    verificarPagamento.hidden = false;
+                    atualizarOpcao();
+                });
+
                 form.addEventListener("submit", function (evento) {
                     evento.preventDefault();
-                    var nomes = { boleto: "Boleto", credito: "Cartão de crédito", debito: "Cartão de débito", pix: "Pix" };
-                    mensagem.textContent = "Pagamento selecionado: " + nomes[document.getElementById("forma-pagamento").value] + ". A integração de cobrança será concluída pelo sistema de pagamento.";
-                    mensagem.hidden = false;
+                    var metodo = forma.value;
+                    if (!metodoConfirmado) { return; }
+                    if ((metodo === "credito" || metodo === "debito") && (!document.getElementById("numero-cartao").value || !document.getElementById("validade-cartao").value || !document.getElementById("codigo-cartao").value)) {
+                        mensagem.textContent = "Preencha os dados do cartão para continuar.";
+                        mensagem.hidden = false;
+                        return;
+                    }
+                    var nomes = { boleto: "Boleto bancário", credito: "Cartão de crédito", debito: "Cartão de débito", pix: "Pix" };
+                    if (metodo === "credito") {
+                        var quantidadeParcelas = Number(parcelamento.value);
+                        var jurosParcelas = { 1: 0, 2: 0.02, 3: 0.04, 6: 0.08, 10: 0.12 }[quantidadeParcelas] || 0;
+                        reserva.parcelas = quantidadeParcelas;
+                        reserva.juros = jurosParcelas;
+                        reserva.valorParcela = (Number(reserva.total || 0) * (1 + jurosParcelas)) / quantidadeParcelas;
+                    }
+                    if (metodo === "pix" && !reserva.pixPago) {
+                        reserva.pixPago = true;
+                        localStorage.setItem("reservaPousada", JSON.stringify(reserva));
+                        mensagem.textContent = "Pagamento Pix verificado com sucesso nesta demonstração.";
+                    }
+                    var reservas;
+                    try { reservas = JSON.parse(localStorage.getItem("reservasPousada")) || []; } catch (erroReservas) { reservas = []; }
+                    reserva.status = "confirmada";
+                    reserva.formaPagamento = nomes[metodo];
+                    reserva.codigo = "PP-" + Date.now().toString().slice(-8);
+                    reserva.confirmadaEm = new Date().toISOString();
+                    reservas.push(reserva);
+                    localStorage.setItem("reservasPousada", JSON.stringify(reservas));
+                    localStorage.setItem("reservaPousada", JSON.stringify(reserva));
+                    form.hidden = true;
+                    mensagem.hidden = true;
+                    sucesso.hidden = false;
                 });
             }());
         </script>

@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    var ENDPOINT = "api/chat";
+    var ENDPOINT = window.location.protocol === "file:" ? null : new URL("api/chat", window.location.href).toString();
     var state = { aberto: false, enviando: false, historico: [] };
     var PRECO_POR_CRIANCA = 90;
     var TARIFAS_QUARTOS = {
@@ -189,6 +189,9 @@
         mostrarDigitando(container);
         state.enviando = true;
         try {
+            if (!ENDPOINT) {
+                throw new Error("O chatbot precisa ser aberto pelo servidor da aplicação. Execute o projeto no NetBeans e acesse a página pelo endereço HTTP.");
+            }
             var resposta = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mensagens: state.historico }) });
             var corpo = await resposta.text();
             var dados;
@@ -214,7 +217,6 @@
         var form = wrapper.querySelector("#chatbot-form");
         var input = wrapper.querySelector("#chatbot-input");
         var mensagens = wrapper.querySelector("#chatbot-messages");
-        adicionarMensagem(mensagens, "Ola! Sou o assistente virtual da Pousada Perola do Porto. Posso ajudar com duvidas sobre reservas, acomodacoes e a pousada. Como posso ajudar?", "assistant");
 
         function abrir() { state.aberto = true; panel.hidden = false; toggle.setAttribute("aria-expanded", "true"); input.focus(); }
         function fecharPainel() { state.aberto = false; panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); }
@@ -237,6 +239,10 @@
             if (!form) { return; }
             form.addEventListener("submit", function (event) {
                 event.preventDefault();
+                var email = form.querySelector("#email");
+                var senha = form.querySelector("#senha");
+                if (!email || !senha || !email.value.trim() || !senha.value) { return; }
+                localStorage.setItem("sessaoPousada", JSON.stringify({ autenticado: true, email: email.value.trim(), autenticadoEm: new Date().toISOString() }));
                 var oldMessage = form.querySelector(".form-message");
                 if (oldMessage) { oldMessage.remove(); }
                 var message = document.createElement("p");
@@ -245,6 +251,10 @@
                 message.textContent = messages[formId];
                 form.appendChild(message);
                 form.reset();
+                var destino = new URLSearchParams(window.location.search).get("redirect");
+                if (destino === "reservas.html") {
+                    window.location.href = "reservas.html";
+                }
             });
         });
 
