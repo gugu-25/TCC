@@ -40,6 +40,11 @@ public class ChatServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        if (request.getContentLengthLong() > 32768) {
+            enviarErro(response, 413, "Requisicao muito grande.");
+            return;
+        }
+
         JsonArray recebidas = lerMensagens(request);
         if (recebidas == null || recebidas.isEmpty()) {
             enviarErro(response, 400, "Nenhuma mensagem recebida.");
@@ -72,7 +77,8 @@ public class ChatServlet extends HttpServlet {
             JsonObject mensagem = (JsonObject) valor;
             String role = mensagem.getString("role", "");
             String content = mensagem.getString("content", "").trim();
-            if (!content.isEmpty() && ("user".equals(role) || "assistant".equals(role))) {
+            if (!content.isEmpty() && content.length() <= 2000
+                    && ("user".equals(role) || "assistant".equals(role))) {
                 contents.add(Json.createObjectBuilder()
                         .add("role", "assistant".equals(role) ? "model" : "user")
                         .add("parts", Json.createArrayBuilder()
@@ -201,9 +207,10 @@ public class ChatServlet extends HttpServlet {
     }
 
     private void configurarCors(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.setHeader("X-Content-Type-Options", "nosniff");
+        response.setHeader("Cache-Control", "no-store");
     }
 
     private void enviarErro(HttpServletResponse response, int status, String mensagem) throws IOException {

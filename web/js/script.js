@@ -242,19 +242,13 @@
                 var email = form.querySelector("#email");
                 var senha = form.querySelector("#senha");
                 if (!email || !senha || !email.value.trim() || !senha.value) { return; }
-                localStorage.setItem("sessaoPousada", JSON.stringify({ autenticado: true, email: email.value.trim(), autenticadoEm: new Date().toISOString() }));
                 var oldMessage = form.querySelector(".form-message");
                 if (oldMessage) { oldMessage.remove(); }
                 var message = document.createElement("p");
                 message.className = "form-message";
                 message.setAttribute("role", "status");
-                message.textContent = messages[formId];
+                message.textContent = "O login precisa ser validado pelo servidor antes de acessar suas reservas.";
                 form.appendChild(message);
-                form.reset();
-                var destino = new URLSearchParams(window.location.search).get("redirect");
-                if (destino === "reservas.html") {
-                    window.location.href = "reservas.html";
-                }
             });
         });
 
